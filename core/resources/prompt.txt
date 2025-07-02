@@ -5,6 +5,9 @@ Please analyze the text between the sentences "CONTENT START HERE" and "CONTENT 
 - Only single tag should be applied.
 - If there are no good tags, leave the array empty.
 - You must respond in JSON using this JSON schema:      Tags = {"tags": list[str]}      Return: Tags
+- Example:
+{"tags": ["tag-1", "tag-2"]}
+
 CONTENT START HERE
 
 {{.Content}}
