@@ -6,15 +6,15 @@ import (
 )
 
 type Config struct {
-	WallabagUrl    string `envconfig:"WALLABAG_URL"`
-	ClientID       string `envconfig:"CLIENT_ID"`
-	ClientSecret   string `envconfig:"CLIENT_SECRET"`
-	Username       string `envconfig:"USERNAME"`
-	Password       string `envconfig:"PASSWORD"`
-	GoogleAIApiKey string `envconfig:"GOOGLE_AI_API_KEY"`
+	WallabagUrl    string `envconfig:"WT_WALLABAG_URL"`
+	ClientID       string `envconfig:"WT_WALLABAG_CLIENT_ID"`
+	ClientSecret   string `envconfig:"WT_WALLABAG_CLIENT_SECRET"`
+	Username       string `envconfig:"WT_WALLABAG_USERNAME"`
+	Password       string `envconfig:"WT_WALLABAG_PASSWORD"`
+	GoogleAIApiKey string `envconfig:"WT_GOOGLE_AI_API_KEY"`
 	Ollama         struct {
-		Model string `envconfig:"OLLAMA_MODEL"`
-		URL   string `envconfig:"OLLAMA_URL"`
+		Model string `envconfig:"WT_OLLAMA_MODEL"`
+		URL   string `envconfig:"WT_OLLAMA_URL"`
 	}
 }
 
