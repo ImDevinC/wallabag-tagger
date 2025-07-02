@@ -18,7 +18,7 @@ func OllamaGetTags(config Config, content string) (string, error) {
 	contentSanitized := p.Sanitize(content)
 
 	if len(contentSanitized) == 0 {
-		return "", errors.New("empty content")
+		return "", ErrEmptyContent
 	}
 
 	prompt := renderPrompt("resources/prompt.txt", map[string]interface{}{

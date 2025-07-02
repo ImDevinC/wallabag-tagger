@@ -53,6 +53,9 @@ func GeminiGetTags(config Config, content string) (string, error) {
 	contentSanitized := p.Sanitize(
 		content,
 	)
+	if len(contentSanitized) == 0 {
+		return "", ErrEmptyContent
+	}
 	prompt := renderPrompt("resources/prompt.txt", map[string]interface{}{
 		"Content": contentSanitized,
 	})
