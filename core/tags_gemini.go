@@ -34,7 +34,7 @@ func renderPrompt(templatePath string, data any) string {
 	return tpl.String()
 }
 
-func GeminiGetTags(content string) (string, error) {
+func GeminiGetTags(config Config, content string) (string, error) {
 	var err error
 
 	// init client

@@ -7,6 +7,10 @@ import (
 )
 
 func WallabagInit() {
+	config, err := GetConfigFromEnv()
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to load config")
+	}
 	wallabagConfig := wallabago.WallabagConfig{
 		WallabagURL:  config.WallabagUrl,
 		ClientID:     config.ClientID,

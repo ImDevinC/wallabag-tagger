@@ -27,6 +27,10 @@ func isSkipEntry(entry wallabago.Item) bool {
 }
 
 func LLMTags() {
+	config, err := GetConfigFromEnv()
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to load config")
+	}
 	entries := WallabagGetEntries()
 	for _, entry := range entries.Embedded.Items {
 		// skip if already tagged via LLM
@@ -37,8 +41,16 @@ func LLMTags() {
 		}
 		log.Info().Msgf("Processing article: %s", entry.Title)
 
-		// get tags from llm
-		tagsStr, err := GeminiGetTags(entry.Content)
+		var tagsStr string
+		if config.GoogleAIApiKey != "" {
+			// get tags from llm
+			tagsStr, err = GeminiGetTags(config, entry.Content)
+		} else if config.Ollama.URL != "" && config.Ollama.Model != "" {
+			tagsStr, err = OllamaGetTags(config, entry.Content)
+		} else {
+			log.Error().Msg("no llm config")
+			return
+		}
 
 		if err == nil { // if successfully generated tags
 			// convert json-string to Tags struct

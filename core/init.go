@@ -1,16 +1,27 @@
 package core
 
 import (
-	cliBase "github.com/kahnwong/cli-base"
+	_ "github.com/joho/godotenv/autoload"
+	"github.com/kelseyhightower/envconfig"
 )
 
-var config = cliBase.ReadYamlSops[Config]("~/.config/wallabag-tagger/config.sops.yaml")
-
 type Config struct {
-	WallabagUrl    string `yaml:"WALLABAG_URL"`
-	ClientID       string `yaml:"CLIENT_ID"`
-	ClientSecret   string `yaml:"CLIENT_SECRET"`
-	Username       string `yaml:"USERNAME"`
-	Password       string `yaml:"PASSWORD"`
-	GoogleAIApiKey string `yaml:"GOOGLE_AI_API_KEY"`
+	WallabagUrl    string `envconfig:"WALLABAG_URL"`
+	ClientID       string `envconfig:"CLIENT_ID"`
+	ClientSecret   string `envconfig:"CLIENT_SECRET"`
+	Username       string `envconfig:"USERNAME"`
+	Password       string `envconfig:"PASSWORD"`
+	GoogleAIApiKey string `envconfig:"GOOGLE_AI_API_KEY"`
+	Ollama         struct {
+		Model string `envconfig:"OLLAMA_MODEL"`
+		URL   string `envconfig:"OLLAMA_URL"`
+	}
+}
+
+func GetConfigFromEnv() (Config, error) {
+	var config Config
+	if err := envconfig.Process("", &config); err != nil {
+		return Config{}, err
+	}
+	return config, nil
 }
