@@ -2,11 +2,14 @@ package core
 
 import (
 	"encoding/json"
+	"errors"
 	"strings"
 
 	"github.com/Strubbl/wallabago/v9"
 	"github.com/rs/zerolog/log"
 )
+
+var ErrEmptyContent = errors.New("empty content")
 
 type Tags struct {
 	Tag []string `json:"tags"`
@@ -32,11 +35,11 @@ func LLMTags() {
 		log.Fatal().Err(err).Msg("failed to load config")
 	}
 	entries := WallabagGetEntries()
+	log.Debug().Msgf("found %d items", len(entries.Embedded.Items))
 	for _, entry := range entries.Embedded.Items {
 		// skip if already tagged via LLM
 		isSkip := isSkipEntry(entry)
 		if isSkip {
-			log.Info().Msgf("Skipping article: %s", entry.Title)
 			continue
 		}
 		log.Info().Msgf("Processing article: %s", entry.Title)
@@ -52,22 +55,28 @@ func LLMTags() {
 			return
 		}
 
-		if err == nil { // if successfully generated tags
-			// convert json-string to Tags struct
-			var tags Tags
-			err := json.Unmarshal([]byte(tagsStr), &tags)
-			if err != nil {
-				log.Error().Msgf("Cannot unmarshal tags: %s", tagsStr)
+		if err != nil {
+			log.Error().Err(err).Msgf("failed to get content for article: %s", entry.Title)
+			if errors.Is(err, ErrEmptyContent) {
+				WallabagWriteTags(entry, []string{"llm-no-content"})
 			}
-
-			// add tags prefix so it doesn't conflict with manually-assigned tags
-			var tagsWithPrefix []string
-			for _, tag := range tags.Tag {
-				tagsWithPrefix = append(tagsWithPrefix, "llm-"+tag)
-			}
-
-			// update entry tags
-			WallabagWriteTags(entry, tagsWithPrefix)
+			continue
 		}
+
+		// convert json-string to Tags struct
+		var tags Tags
+		err := json.Unmarshal([]byte(tagsStr), &tags)
+		if err != nil {
+			log.Error().Msgf("Cannot unmarshal tags: %s", tagsStr)
+		}
+
+		// add tags prefix so it doesn't conflict with manually-assigned tags
+		var tagsWithPrefix []string
+		for _, tag := range tags.Tag {
+			tagsWithPrefix = append(tagsWithPrefix, "llm-"+tag)
+		}
+
+		// update entry tags
+		WallabagWriteTags(entry, tagsWithPrefix)
 	}
 }
