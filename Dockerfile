@@ -1,4 +1,4 @@
-ARG GO_VERSION=1.24
+ARG GO_VERSION=1.25.1
 
 FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:${GO_VERSION} AS builder
 
